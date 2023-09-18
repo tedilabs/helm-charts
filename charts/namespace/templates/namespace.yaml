@@ -1,0 +1,23 @@
+{{- $commonLabels := default (dict) .Values.commonLabels }}
+{{- $commonAnnotations := default (dict) .Values.commonAnnotations }}
+{{- $namespaceLabels := default (dict) .Values.labels }}
+{{- $namespaceAnnotations := default (dict) .Values.annotations }}
+{{- $labels := merge (dict) $commonLabels $namespaceLabels }}
+{{- $annotations := merge (dict) $commonAnnotations $namespaceAnnotations }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ required "A valid `.Values.name` is required." .Values.name | quote }}
+  {{- if $labels }}
+  labels:
+    {{- include "namespace.labels" . | nindent 4 }}
+    {{- range $key, $val := $labels }}
+      {{- $key | nindent 4 }}: {{ $val | quote }}
+    {{- end }}
+  {{- end }}
+  {{- if $annotations }}
+  annotations:
+    {{- range $key, $val := $annotations }}
+      {{- $key | nindent 4 }}: {{ $val | quote }}
+    {{- end }}
+  {{- end }}

@@ -1,0 +1,21 @@
+apiVersion: v2
+name: namespace
+description: A Helm chart to manage Kubernetes namespace.
+home: https://github.com/tedilabs/helm-charts
+# icon:
+sources:
+- https://github.com/tedilabs/helm-charts
+type: application
+version: "0.1.0"
+appVersion: "0.1.0"
+kubeVersion: ">=1.23.0-0"
+keywords:
+- cluster
+maintainers:
+- name: Byungjin Park
+  email: posquit0.bj@gmail.com
+annotations:
+  "artifacthub.io/license": Apache-2.0
+  "artifacthub.io/links": |
+    - name: Chart Source
+      url: https://github.com/tedilabs/helm-charts

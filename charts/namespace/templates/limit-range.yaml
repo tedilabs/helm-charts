@@ -1,0 +1,31 @@
+{{- if .Values.limitRange.enabled }}
+{{- $commonLabels := default (dict) .Values.commonLabels }}
+{{- $commonAnnotations := default (dict) .Values.commonAnnotations }}
+{{- $limitRangeLabels := default (dict) .Values.limitRange.labels }}
+{{- $limitRangeAnnotations := default (dict) .Values.limitRange.annotations }}
+{{- $labels := merge (dict) $commonLabels $limitRangeLabels }}
+{{- $annotations := merge (dict) $commonAnnotations $limitRangeAnnotations }}
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: {{ .Values.name | quote }}
+  namespace: {{ .Values.name | quote }}
+  {{- if $labels }}
+  labels:
+    {{- include "namespace.labels" . | nindent 4 }}
+    {{- range $key, $val := $labels }}
+      {{- $key | nindent 4 }}: {{ $val | quote }}
+    {{- end }}
+  {{- end }}
+  {{- if $annotations }}
+  annotations:
+    {{- range $key, $val := $annotations }}
+      {{- $key | nindent 4 }}: {{ $val | quote }}
+    {{- end }}
+  {{- end }}
+spec:
+  {{- with .Values.limitRange.limits }}
+  limits:
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+{{- end }}

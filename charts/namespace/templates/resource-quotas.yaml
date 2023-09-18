@@ -1,0 +1,44 @@
+{{- if .Values.resourceQuotas }}
+{{- $root := . }}
+{{- $commonLabels := default (dict) .Values.commonLabels }}
+{{- $commonAnnotations := default (dict) .Values.commonAnnotations }}
+apiVersion: v1
+kind: List
+items:
+{{- range $quota := .Values.resourceQuotas }}
+{{- $resourceQuotaLabels := default (dict) $quota.labels }}
+{{- $resourceQuotaAnnotations := default (dict) $quota.annotations }}
+{{- $labels := merge (dict) $commonLabels $resourceQuotaLabels }}
+{{- $annotations := merge (dict) $commonAnnotations $resourceQuotaAnnotations }}
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: {{ required "A valid `name` is required." $quota.name | quote }}
+    {{- if $labels }}
+    labels:
+      {{- include "namespace.labels" $root | nindent 6 }}
+      {{- range $key, $val := $labels }}
+        {{- $key | nindent 6 }}: {{ $val | quote }}
+      {{- end }}
+    {{- end }}
+    {{- if $annotations }}
+    annotations:
+      {{- range $key, $val := $annotations }}
+        {{- $key | nindent 6 }}: {{ $val | quote }}
+      {{- end }}
+    {{- end }}
+  spec:
+    hard:
+      {{- range $key, $val := $quota.hard }}
+        {{- $key | nindent 6 }}: {{ $val }}
+      {{- end }}
+    {{- if $quota.scopeSelector }}
+    scopeSelector:
+      {{- toYaml $quota.scopeSelector | nindent 6 }}
+    {{- end }}
+    {{- if $quota.scopes }}
+    scopes:
+      {{- toYaml $quota.scopes | nindent 6 }}
+    {{- end }}
+{{- end }}
+{{- end }}
